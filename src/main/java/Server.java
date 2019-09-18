@@ -6,6 +6,7 @@ public class Server {
     private static ServerSocket server;
     private static BufferedReader input;
     private static BufferedWriter output;
+    private static boolean flag = true;
 
 
     public static void main(String[] args) {
@@ -18,12 +19,21 @@ public class Server {
             System.out.println("Server started");
             try {
                 clientSocket = server.accept();
-                input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                String message = input.readLine();
-                System.out.println(message);
-                output.write("Сервера ответ "+message+"\n");
-                output.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                while (flag) {
+                    input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                    String message = input.readLine();
+                    System.out.println(message);
+                    flag = !message.contains("stop");
+                    output.write("Сервера ответ " + message + "\n");
+                    output.flush();
+
+
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -35,8 +45,6 @@ public class Server {
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-
-
 
             }
         } finally {

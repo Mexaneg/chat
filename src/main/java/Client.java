@@ -6,6 +6,7 @@ public class Client {
     private static BufferedReader in;
     private static BufferedWriter out;
 
+
     public static void main(String[] args) {
         try {
 
@@ -14,12 +15,18 @@ public class Client {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 out =  new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                System.out.println("Введите текст с клавиатуры");
-                String message = reader.readLine();
-                out.write(message + "\n");
-                out.flush();
-                String answer = in.readLine();
-                System.out.println(answer);
+                boolean flag = true;
+                while(flag) {
+
+
+                    System.out.println("Введите текст с клавиатуры");
+                    String message = reader.readLine();
+                    flag = !message.contains("stop");
+                    out.write(message + "\n");
+                    out.flush();
+                    String answer = in.readLine();
+                    System.out.println(answer);
+                }
 
 
             } catch (IOException e) {
