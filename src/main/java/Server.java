@@ -1,59 +1,44 @@
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class Server {
-    private static Socket clientSocket;
-    private static ServerSocket server;
-    private static BufferedReader input;
-    private static BufferedWriter output;
-    private static boolean flag = true;
+    private static final int PORT = 5555;
+    private static LinkedList<Connection> connectionList = new LinkedList<>();
 
 
-    public static void main(String[] args) {
+    public static LinkedList<Connection> getConnectionList() {
+        return connectionList;
+    }
+
+    public static void removeConnection(Connection cn) {
+        connectionList.remove(cn);
+    }
+
+    public static void main(String[] args) throws IOException {
+        //ServerSocket server = new ServerSocket(PORT);
+        ServerSocket server = new ServerSocket(PORT);
+        System.out.println("Server started");
         try {
-            try {
-                server = new ServerSocket(5005);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Server started");
-            try {
-                clientSocket = server.accept();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                while (flag) {
-                    input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                    String message = input.readLine();
-                    System.out.println(message);
-                    flag = !message.contains("stop");
-                    output.write("Сервера ответ " + message + "\n");
-                    output.flush();
-
-
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                System.out.println("Connect closed");
+            while (true) {
+                Socket clientSocket = server.accept();
                 try {
+                    connectionList.add(new Connection(clientSocket));
+                    System.out.println("Added new client connection");
+                    System.out.println(connectionList.toString());
+                } catch (IOException e) {
                     clientSocket.close();
-                    input.close();
-                    output.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
                 }
 
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+
         } finally {
             System.out.println("Сервер закрыт");
-            try {
-                server.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
+            server.close();
+
         }
 
     }
