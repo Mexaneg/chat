@@ -1,0 +1,69 @@
+package client;
+
+import logs.*;
+
+import java.io.*;
+import java.net.*;
+
+public class Client {
+    private int port = 5555;
+    private String addr = "localhost";
+    private Socket clientSocket;
+    private Thread read;
+    private Thread write;
+
+
+    public Client() {
+        try {
+            clientSocket = new Socket(addr, port);
+            read = new Thread(new ReadMessage(this));
+            read.start();
+            write = new Thread(new WriteMessage(this));
+            write.start();
+
+
+        } catch (IOException e) {
+            Log.LOG_CLIENT.error("Failed to open connection: "+e.getMessage());
+            this.closeConnection();
+        }
+    }
+
+    public Client(int port, String addr) {
+        this.port = port;
+        this.addr = addr;
+        try {
+            clientSocket = new Socket(addr, port);
+            read = new Thread(new ReadMessage(this));
+            read.start();
+            write = new Thread(new WriteMessage(this));
+            write.start();
+
+        } catch (IOException e) {
+            Log.LOG_CLIENT.error("Failed to open connection: "+e.getMessage());
+        }
+    }
+    public void closeConnection() {
+        try {
+            if (!clientSocket.isClosed()) {
+                clientSocket.close();
+                read.interrupt();
+                write.interrupt();
+                Log.LOG_CLIENT.info("Connect closed");
+            }
+
+        } catch (IOException e) {
+            Log.LOG_CLIENT.error("Failed to close connection: "+e.getMessage());
+        }
+    }
+
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    public static void main(String[] args) {
+        new Client();
+
+    }
+
+
+}
