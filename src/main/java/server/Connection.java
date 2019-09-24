@@ -9,15 +9,14 @@ public class Connection implements Runnable {
     private Socket clientSocket;
     private BufferedReader input;
     private BufferedWriter output;
-    private Thread tr;
+    private Server server;
 
 
-    public Connection(Socket socket) throws IOException {
+    public Connection(Socket socket, Server server) throws IOException {
         clientSocket = socket;
         input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-        tr = new Thread(this);
-        tr.start();
+        this.server=server;
     }
 
     @Override
@@ -30,7 +29,7 @@ public class Connection implements Runnable {
                     this.closeConnection();
                     break;
                 }
-                for (Connection cn : Server.getConnectionList()) {
+                for (Connection cn : server.getConnectionList()) {
                     if (!cn.equals(this)) {
                           cn.sendMsg(message);
                     }
@@ -63,10 +62,9 @@ public class Connection implements Runnable {
                 clientSocket.close();
                 input.close();
                 output.close();
-                for(Connection connection : Server.getConnectionList()){
+                for(Connection connection : server.getConnectionList()){
                     if(connection.equals(this)){
-                        tr.interrupt();
-                        Server.removeConnection(this);
+                        server.removeConnection(this);
                         Log.LOG_CONNECTION.info("Connection closed");
                     }
                 }

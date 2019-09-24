@@ -4,6 +4,7 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        Server.start();
+        Server serv = new Server();
+        serv.start();
     }
 }

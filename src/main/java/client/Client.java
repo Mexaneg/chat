@@ -12,8 +12,7 @@ public class Client {
     private Thread read;
     private Thread write;
 
-
-    public Client() {
+    private void initializeClient (){
         try {
             clientSocket = new Socket(addr, port);
             read = new Thread(new ReadMessage(this));
@@ -28,19 +27,15 @@ public class Client {
         }
     }
 
+
+    public Client() {
+        this.initializeClient();
+    }
+
     public Client(int port, String addr) {
         this.port = port;
         this.addr = addr;
-        try {
-            clientSocket = new Socket(addr, port);
-            read = new Thread(new ReadMessage(this));
-            read.start();
-            write = new Thread(new WriteMessage(this));
-            write.start();
-
-        } catch (IOException e) {
-            Log.LOG_CLIENT.error("Failed to open connection: "+e.getMessage());
-        }
+        this.initializeClient();
     }
     public void closeConnection() {
         try {

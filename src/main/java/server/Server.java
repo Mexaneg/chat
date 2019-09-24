@@ -9,25 +9,25 @@ import java.util.*;
 
 public class Server {
     private static final int PORT = 5555;
-    private static LinkedList<Connection> connectionList = new LinkedList<>();
+    private LinkedList<Connection> connectionList = new LinkedList<>();
 
-
-
-    public static LinkedList<Connection> getConnectionList() {
+    public LinkedList<Connection> getConnectionList() {
         return connectionList;
     }
 
-    public static void removeConnection(Connection cn) {
+    public void removeConnection(Connection cn) {
         connectionList.remove(cn);
     }
-    public static void start() throws IOException {
+    public void start() throws IOException {
         ServerSocket server = new ServerSocket(PORT);
         Log.LOG_SERVER.info("Server started");
         try {
             while (true) {
                 Socket clientSocket = server.accept();
                 try {
-                    connectionList.add(new Connection(clientSocket));
+                    Connection cn = new Connection(clientSocket,this);
+                    (new Thread(cn)).start();
+                    connectionList.add(cn);
                     Log.LOG_SERVER.info("Added new client connection");
                     Log.LOG_SERVER.debug("Connections List: "+connectionList.toString());
                 } catch (IOException e) {
