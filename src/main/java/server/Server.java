@@ -5,6 +5,7 @@ import logs.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 
 public class Server {
@@ -21,12 +22,13 @@ public class Server {
     public void start() throws IOException {
         ServerSocket server = new ServerSocket(PORT);
         Log.LOG_SERVER.info("Server started");
+        ExecutorService executor =Executors.newFixedThreadPool(8);
         try {
             while (true) {
                 Socket clientSocket = server.accept();
                 try {
                     Connection cn = new Connection(clientSocket,this);
-                    (new Thread(cn)).start();
+                    executor.execute(cn);
                     connectionList.add(cn);
                     Log.LOG_SERVER.info("Added new client connection");
                     Log.LOG_SERVER.debug("Connections List: "+connectionList.toString());
@@ -38,11 +40,12 @@ public class Server {
             }
         } catch (IOException e) {
             Log.LOG_SERVER.info("Connection Waiting Cycle Broken");
+            executor.shutdown();
 
         } finally {
 
             Log.LOG_SERVER.info("Server closed");
-
+            executor.shutdown();
             server.close();
 
         }
