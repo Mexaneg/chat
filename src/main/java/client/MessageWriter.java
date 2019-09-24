@@ -4,7 +4,7 @@ import logs.*;
 
 import java.io.*;
 
-public class WriteMessage implements Runnable {
+public class MessageWriter implements Runnable {
 
     private BufferedReader reader;
     private BufferedWriter out;
@@ -38,7 +38,7 @@ public class WriteMessage implements Runnable {
         }
     }
 
-    public WriteMessage(Client client) {
+    public MessageWriter(Client client) {
         this.client = client;
         try {
             out = new BufferedWriter(new OutputStreamWriter(client.getClientSocket().getOutputStream()));

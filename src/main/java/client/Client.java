@@ -15,9 +15,9 @@ public class Client {
     private void initializeClient (){
         try {
             clientSocket = new Socket(addr, port);
-            read = new Thread(new ReadMessage(this));
+            read = new Thread(new MessageReader(this));
             read.start();
-            write = new Thread(new WriteMessage(this));
+            write = new Thread(new MessageWriter(this));
             write.start();
 
 

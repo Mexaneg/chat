@@ -4,7 +4,7 @@ import logs.*;
 
 import java.io.*;
 
-public class ReadMessage implements Runnable {
+public class MessageReader implements Runnable {
     private BufferedReader in;
     private Client client;
 
@@ -35,7 +35,7 @@ public class ReadMessage implements Runnable {
 
     }
 
-    public ReadMessage(Client client) {
+    public MessageReader(Client client) {
         this.client = client;
         try {
             in = new BufferedReader(new InputStreamReader(client.getClientSocket().getInputStream()));
