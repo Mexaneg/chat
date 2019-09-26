@@ -12,8 +12,8 @@ public class Connection extends Subject implements Runnable {
     private boolean active;
 
 
-    public Connection(Socket socket, Server server) throws IOException {
-        super(server);
+    public Connection(Socket socket, Observer observer) throws IOException {
+        super(observer);
         active = true;
         clientSocket = socket;
         input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
