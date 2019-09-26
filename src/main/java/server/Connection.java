@@ -5,18 +5,30 @@ import logs.*;
 import java.io.*;
 import java.net.*;
 
-public class Connection implements Runnable {
+public class Connection extends Subject implements Runnable {
     private Socket clientSocket;
     private BufferedReader input;
     private BufferedWriter output;
-    private Server server;
+    private boolean active;
 
 
     public Connection(Socket socket, Server server) throws IOException {
+        super(server);
+        active = true;
         clientSocket = socket;
         input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-        this.server=server;
+
+    }
+
+    @Override
+    public void notifyObserverDeleteConnection() {
+        super.getObserver().updateConnectionList();
+    }
+
+    @Override
+    public void notifyObserverSendMessage(String message) {
+        super.getObserver().sendMessage(message,this);
     }
 
     @Override
@@ -29,25 +41,21 @@ public class Connection implements Runnable {
                     this.closeConnection();
                     break;
                 }
-                for (Connection cn : server.getConnectionList()) {
-                    if (!cn.equals(this)) {
-                          cn.sendMsg(message);
-                    }
-                }
-
+                notifyObserverSendMessage(message);
             }
         } catch (IOException e) {
             this.closeConnection();
         }
     }
 
-    private void sendMsg(String message) {
+
+    public void sendMsg(String message) {
         {
             try {
                 output.write(message + "\n");
                 output.flush();
             } catch (IOException e) {
-                Log.LOG_CONNECTION.error("Message send with error: "+e.getMessage());
+                Log.LOG_CONNECTION.error("Message send with error: " + e.getMessage());
             }
 
         }
@@ -58,22 +66,21 @@ public class Connection implements Runnable {
     public void closeConnection() {
         try {
             if (!clientSocket.isClosed()) {
-
                 clientSocket.close();
                 input.close();
                 output.close();
-                for(Connection connection : server.getConnectionList()){
-                    if(connection.equals(this)){
-                        server.removeConnection(this);
-                        Log.LOG_CONNECTION.info("Connection closed");
-                    }
-                }
+                active = false;
+                Log.LOG_CONNECTION.info("Connection closed");
+                notifyObserverDeleteConnection();
 
             }
-            }catch(IOException e){
-            Log.LOG_CONNECTION.error("Connection closed with error: "+e.getMessage());
+        } catch (IOException e) {
+            Log.LOG_CONNECTION.error("Connection closed with error: " + e.getMessage());
 
         }
     }
 
+    public boolean isActive() {
+        return active;
+    }
 }

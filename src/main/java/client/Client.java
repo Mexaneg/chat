@@ -25,6 +25,9 @@ public class Client {
             Log.LOG_CLIENT.error("Failed to open connection: "+e.getMessage());
             this.closeConnection();
         }
+        catch (NullPointerException e){
+            Log.LOG_CLIENT.error("Failed to open connection: "+e.getMessage());
+        }
     }
 
 
@@ -48,6 +51,8 @@ public class Client {
 
         } catch (IOException e) {
             Log.LOG_CLIENT.error("Failed to close connection: "+e.getMessage());
+        }catch (NullPointerException e){
+            Log.LOG_CLIENT.error("Failed to open connection: "+e.getMessage());
         }
     }
 
@@ -55,10 +60,6 @@ public class Client {
         return clientSocket;
     }
 
-    public static void main(String[] args) {
-        new Client();
-
-    }
 
 
 }

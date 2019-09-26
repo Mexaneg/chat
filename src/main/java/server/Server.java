@@ -8,17 +8,34 @@ import java.util.*;
 import java.util.concurrent.*;
 
 
-public class Server {
+public class Server implements Observer{
     private static final int PORT = 5555;
     private LinkedList<Connection> connectionList = new LinkedList<>();
 
-    public LinkedList<Connection> getConnectionList() {
-        return connectionList;
+    @Override
+    synchronized public void updateConnectionList() {
+        for (Connection cn:connectionList){
+            if(!cn.isActive()){
+                removeConnection(cn);
+            }
+        }
+
+    }
+
+    @Override
+    synchronized public void sendMessage(String message,Connection connection) {
+
+        for (Connection cn : connectionList) {
+            if (!cn.equals(connection)) {
+                cn.sendMsg(message);
+            }
+        }
     }
 
     public void removeConnection(Connection cn) {
         connectionList.remove(cn);
     }
+
     public void start() throws IOException {
         ServerSocket server = new ServerSocket(PORT);
         Log.LOG_SERVER.info("Server started");
@@ -50,6 +67,7 @@ public class Server {
 
         }
     }
+
 
 
 }
