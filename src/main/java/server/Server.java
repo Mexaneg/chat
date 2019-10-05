@@ -22,12 +22,13 @@ public class Server implements Observer{
 
     }
 
+
     @Override
-    synchronized public void sendMessage(String message,Connection connection) {
+    synchronized public void sendCommand(Command command,Connection connection) {
 
         for (Connection cn : connectionList) {
             if (!cn.equals(connection)) {
-                cn.sendMsg(message);
+                cn.sendMsg(command);
             }
         }
     }

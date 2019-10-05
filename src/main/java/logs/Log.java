@@ -9,4 +9,5 @@ public class Log {
     public static final Logger LOG_CONNECTION = LogManager.getLogger("Connection");
     public static final Logger LOG_MESSAGE_WRITER = LogManager.getLogger("MessageWriter");
     public static final Logger LOG_MESSAGE_READER = LogManager.getLogger("MessageReader");
+    public static final Logger LOG_JSON_CONVERTER = LogManager.getLogger("JSONConverter");
 }

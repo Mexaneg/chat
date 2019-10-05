@@ -26,22 +26,25 @@ public class Connection extends Subject implements Runnable {
         super.getObserver().updateConnectionList();
     }
 
+
     @Override
-    public void notifyObserverSendMessage(String message) {
-        super.getObserver().sendMessage(message,this);
+    public void notifyObserverSendCommand(Command command) {
+        super.getObserver().sendCommand(command, this);
     }
 
     @Override
     public void run() {
-        String message;
+
+        Command command;
+        JSONConverter converter = new JSONConverter();
         try {
             while (true) {
-                message = input.readLine();
-                if (message.equals("stop")) {
+                command = converter.decodeCommand(input.readLine());
+                if (command.isLast()) {
                     this.closeConnection();
                     break;
                 }
-                notifyObserverSendMessage(message);
+                notifyObserverSendCommand(command);
             }
         } catch (IOException e) {
             this.closeConnection();
@@ -49,10 +52,11 @@ public class Connection extends Subject implements Runnable {
     }
 
 
-    public void sendMsg(String message) {
+    public void sendMsg(Command command) {
         {
+            JSONConverter converter = new JSONConverter();
             try {
-                output.write(message + "\n");
+                output.write(converter.codeCommand(command) + "\n");
                 output.flush();
             } catch (IOException e) {
                 Log.LOG_CONNECTION.error("Message send with error: " + e.getMessage());

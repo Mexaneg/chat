@@ -2,5 +2,5 @@ package server;
 
 public interface Observer {
     void updateConnectionList();
-    void sendMessage(String message, Connection connection);
+    void sendCommand(Command command, Connection connection);
 }

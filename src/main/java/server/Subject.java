@@ -15,6 +15,6 @@ public abstract class Subject {
     }
 
     public abstract void notifyObserverDeleteConnection();
-    public abstract void notifyObserverSendMessage(String message);
+    public abstract void notifyObserverSendCommand(Command command);
 
 }
